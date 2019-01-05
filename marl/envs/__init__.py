@@ -1,1 +1,0 @@
-from marl.envs.switch_riddle import SwitchRiddle

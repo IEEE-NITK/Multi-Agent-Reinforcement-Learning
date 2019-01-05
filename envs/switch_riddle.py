@@ -1,9 +1,6 @@
-import gym
-from gym import error, spaces, utils
-from gym.utils import seeding
 import numpy as np 
 
-class SwitchRiddle(gym.Env):
+class SwitchRiddle():
     def __init__(self, opts):
         opts_game = {
             'game_action_space': 2,
@@ -14,7 +11,8 @@ class SwitchRiddle(gym.Env):
         opts['nsteps'] = 4 * opts['game_nagents'] - 6
         
         for key, val in opts_game.items():
-            if not opts[key]:
+            # print(key)
+            if key not in opts.keys():
                 opts[key] = val
         self.opts = opts
         self.reward_all_live = 1 + self.opts['game_reward_shift']
@@ -93,7 +91,7 @@ class SwitchRiddle(gym.Env):
         self.terminal = np.zeros((self.opts['bs']))
 
         self.step_counter = 1
-        self.active_agent = np.zeros(self.opts['bs'], self.opts['nsteps'])
+        self.active_agent = np.zeros((self.opts['bs'], self.opts['nsteps']))
         for b in range(self.opts['bs']):
             for step in range(1, self.opts['nsteps']):
                 id = np.random.randint(0, self.opts['game_nagents'])

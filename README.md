@@ -16,7 +16,6 @@ We also have a [blog](https://marl-ieee-nitk.github.io) with articles on the sev
 
 ## Requirements
 * [PyTorch](https://pytorch.org/)
-* [OpenAI Gym](https://gym.openai.com/)
 
 ## Environments
 * [Switch Riddle](http://www.cut-the-knot.org/Probability/LightBulbs.shtml)
