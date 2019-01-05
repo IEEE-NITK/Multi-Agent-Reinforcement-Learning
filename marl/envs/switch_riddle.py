@@ -28,7 +28,7 @@ class SwitchRiddle(gym.Env):
         return self.__get_reward(action)
     
     def __get_reward(self, a_t):
-        for b in range(1, self.opts['bs']):
+        for b in range(self.opts['bs']):
             active_agent = self.active_agent[b][self.step_counter]
             if a_t[b][active_agent] == 2 and self.terminal['b'] == 0:
                 has_been = np.squeeze(np.sum(self.has_been[b, 1:self.step_counter, :], axis=2), axis=2)
@@ -58,7 +58,7 @@ class SwitchRiddle(gym.Env):
         if self.opts['model_dial'] == 1:
             bound = self.opts['game_action_space']
 
-            for i in range(1, self.opts['bs']):
+            for i in range(self.opts['bs']):
                 if self.active_agent[i][step] == agent:
                     action_range[i] = (i, (1, bound))
                 else:
@@ -67,7 +67,7 @@ class SwitchRiddle(gym.Env):
         else:
             comm_range = {}
 
-            for i in range(1, self.opts['bs']):
+            for i in range(self.opts['bs']):
                 if self.active_agent[i][step] == agent:
                     action_range[i] = (i, (1, self.opts['game_action_space']))
                     comm_range[i] = (i, (self.opts['game_action_space'] + 1, self.opts['game_action_space_total']))
@@ -79,7 +79,7 @@ class SwitchRiddle(gym.Env):
     def __get_comm_limited(self, step, i):
         if self.opts['game_comm_limited']:
             action_range = {}
-            for b in range(1, self.opts['bs']):
+            for b in range(self.opts['bs']):
                 if step > 1 and i == self.active_agent[b][step]:
                     action_range[i] = (self.active_agent[b][step - 1], ())
                 else:
@@ -94,12 +94,11 @@ class SwitchRiddle(gym.Env):
 
         self.step_counter = 1
         self.active_agent = np.zeros(self.opts['bs'], self.opts['nsteps'])
-        for b in range(1, self.opts['bs']):
+        for b in range(self.opts['bs']):
             for step in range(1, self.opts['nsteps']):
                 id = np.random.randint(0, self.opts['game_nagents'])
                 self.active_agent[b, step] = id
                 self.has_been[b, step, id] = 1
-
 
     def render(self):
         pass
