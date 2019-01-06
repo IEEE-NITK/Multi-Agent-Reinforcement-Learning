@@ -23,7 +23,7 @@ class Arena:
 	def train(self, agents, reset_agents = True):
 		opt = self.opt
 
-		if reset:
+		if reset_agents:
 			for agent in agents[1:]:
 				agent.reset()
 
