@@ -20,6 +20,11 @@ We also have a [blog](https://marl-ieee-nitk.github.io) with articles on the sev
 ## Environments
 * [Switch Riddle](http://www.cut-the-knot.org/Probability/LightBulbs.shtml)
 
+## Structure
+* The `env` directory contains the code for the environments implemented.  
+* The `agent.py` file contains the PyTorch implementation of the agent.
+* The `arena.py` file contains the training loop and implementation of the learning algorithm.
+
 ## Team
 * Moksh Jain
 * Mahir Jain
