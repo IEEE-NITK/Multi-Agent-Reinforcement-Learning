@@ -22,14 +22,16 @@ class SwitchRiddle():
 
     
     def step(self, action):
+        reward, terminal = self.__get_reward(action)
         self.step_counter += 1
-        return self.__get_reward(action)
-    
+
+        return reward, terminal
+
     def __get_reward(self, a_t):
         for b in range(self.opts['bs']):
-            active_agent = self.active_agent[b][self.step_counter]
+            active_agent = self.active_agent[b][self.step_counter] - 1
             if a_t[b][active_agent] == 2 and self.terminal['b'] == 0:
-                has_been = np.squeeze(np.sum(self.has_been[b, 1:self.step_counter, :], axis=2), axis=2)
+                has_been = np.squeeze(np.sum(self.has_been[b, :self.step_counter + 1, :], axis=2), axis=2)
                 has_been = np.sum(np.greater(has_been, np.zeros_like(has_been), dtype=np.int16))
                 if has_been == self.opts['game_nagents']:
                     self.rewards[b] = self.reward_all_live
@@ -42,61 +44,51 @@ class SwitchRiddle():
         return np.copy(self.rewards), np.copy(self.terminal)
 
     def __get_state(self):
-        state = {}
-        for agent in range(1, self.opts['game_nagents']):
-            state[agent] = np.empty(self.opts['bs'])
-
+        state = np.zeros((self.opts['bs'], self.opts['game_nagents']))
+        for agent in range(1, self.opts['game_nagents'] + 1):
             for b in range(1, self.opts['bs']):
-                state[agent][b] = 1 if self.active_agent[b][self.step_counter] == agent else 2
+                state[b][agent - 1] = 1 if self.active_agent[b][self.step_counter] == agent else 0
         
         return state
     
     def __get_action_range(self, step, agent):
-        action_range = {}
-        if self.opts['model_dial'] == 1:
-            bound = self.opts['game_action_space']
+        action_range = np.zeros((self.opts['bs'], 2), dtype=np.long)
+        comm_range = np.zeros((self.opts['bs'], 2), dtype=np.long)
+        for b in range(self.opts['bs']): 
+            if self.active_agent[b][step] == agent:
+                action_range[b] = np.array([1, self.opts['game_action_space']], dtype=np.long)
+                comm_range[b] = np.array([self.opts['game_action_space'] + 1, self.opts['game_action_space_total']], dtype=np.long)
+            else:
+                action_range[b] = np.array([1, 1], dtype=np.long)
+        
+        return action_range, comm_range
 
-            for i in range(self.opts['bs']):
-                if self.active_agent[i][step] == agent:
-                    action_range[i] = (i, (1, bound))
-                else:
-                    action_range[i] = (i, (1))
-            return action_range
-        else:
-            comm_range = {}
-
-            for i in range(self.opts['bs']):
-                if self.active_agent[i][step] == agent:
-                    action_range[i] = (i, (1, self.opts['game_action_space']))
-                    comm_range[i] = (i, (self.opts['game_action_space'] + 1, self.opts['game_action_space_total']))
-                else:
-                    action_range[i] = (i, (1))
-                    comm_range[i] = (i, (0, 0))
-            return action_range, comm_range
-
-    def __get_comm_limited(self, step, i):
+    def __get_comm_limited(self, step, agent):
         if self.opts['game_comm_limited']:
-            action_range = {}
+            comm_lim = np.zeros(self.opts['bs'], dtype=np.long)
             for b in range(self.opts['bs']):
-                if step > 1 and i == self.active_agent[b][step]:
-                    action_range[i] = (self.active_agent[b][step - 1], ())
+                if step > 0 and agent == self.active_agent[b][step]:
+                    comm_lim[agent] = (self.active_agent[b][step - 1], ())
                 else:
-                    action_range[i] = 0
+                    comm_lim[agent] = 0
 
-            return action_range
+            return comm_lim
 
     def reset(self):
         self.rewards = np.zeros((self.opts['bs'], self.opts['game_nagents']), dtype='float32')
         self.has_been = np.zeros((self.opts['bs'], self.opts['nsteps'], self.opts['game_nagents']))
         self.terminal = np.zeros((self.opts['bs']))
 
-        self.step_counter = 1
+        self.step_counter = 0
         self.active_agent = np.zeros((self.opts['bs'], self.opts['nsteps']))
         for b in range(self.opts['bs']):
-            for step in range(1, self.opts['nsteps']):
-                id = np.random.randint(0, self.opts['game_nagents'])
+            for step in range(self.opts['nsteps']):
+                id = 1 + np.random.randint(0, self.opts['game_nagents'])
                 self.active_agent[b, step] = id
-                self.has_been[b, step, id] = 1
+                self.has_been[b, step, id - 1] = 1
 
-    def render(self):
-        pass
+    def render(self, b=0):
+        print('has been:', self.has_been[b])
+        print('num has been:', self.has_been[b].sum(0).gt(0).sum().item())
+        print('active agents: ', self.active_agent[b])
+        print('reward:', self.rewards[b])
