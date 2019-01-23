@@ -22,12 +22,12 @@ class SwitchRiddle():
 
     
     def step(self, action):
-        reward, terminal = self.__get_reward(action)
+        reward, terminal = self.get_reward(action)
         self.step_counter += 1
 
         return reward, terminal
 
-    def __get_reward(self, a_t):
+    def get_reward(self, a_t):
         for b in range(self.opts['bs']):
             active_agent = self.active_agent[b][self.step_counter] - 1
             if a_t[b][active_agent] == 2 and self.terminal['b'] == 0:
@@ -43,7 +43,7 @@ class SwitchRiddle():
             
         return np.copy(self.rewards), np.copy(self.terminal)
 
-    def __get_state(self):
+    def get_state(self):
         state = np.zeros((self.opts['bs'], self.opts['game_nagents']))
         for agent in range(1, self.opts['game_nagents'] + 1):
             for b in range(1, self.opts['bs']):
@@ -51,7 +51,7 @@ class SwitchRiddle():
         
         return state
     
-    def __get_action_range(self, step, agent):
+    def get_action_range(self, step, agent):
         action_range = np.zeros((self.opts['bs'], 2), dtype=np.long)
         comm_range = np.zeros((self.opts['bs'], 2), dtype=np.long)
         for b in range(self.opts['bs']): 
@@ -63,7 +63,7 @@ class SwitchRiddle():
         
         return action_range, comm_range
 
-    def __get_comm_limited(self, step, agent):
+    def get_comm_limited(self, step, agent):
         if self.opts['game_comm_limited']:
             comm_lim = np.zeros(self.opts['bs'], dtype=np.long)
             for b in range(self.opts['bs']):
@@ -86,6 +86,16 @@ class SwitchRiddle():
                 id = 1 + np.random.randint(0, self.opts['game_nagents'])
                 self.active_agent[b, step] = id
                 self.has_been[b, step, id - 1] = 1
+
+    def god_strategy_reward(self, steps):
+        reward = np.zeros(self.opts['bs'])
+        for b in range(self.opts['bs']):
+            has_been = np.squeeze(np.sum(self.has_been[b, :self.step_counter + 1, :], axis=2), axis=2)
+            has_been = np.sum(np.greater(has_been, np.zeros_like(has_been), dtype=np.int16))
+            if has_been == self.opts['game_nagents']:
+                reward[b] = self.reward_all_live
+
+        return reward
 
     def render(self, b=0):
         print('has been:', self.has_been[b])
