@@ -75,12 +75,12 @@ class SwitchRiddle():
             return comm_lim
 
     def reset(self):
-        self.rewards = np.zeros((self.opts['bs'], self.opts['game_nagents']), dtype='float32')
+        self.rewards = np.zeros((self.opts['bs'], self.opts['game_nagents']))
         self.has_been = np.zeros((self.opts['bs'], self.opts['nsteps'], self.opts['game_nagents']))
-        self.terminal = np.zeros((self.opts['bs']))
+        self.terminal = np.zeros((self.opts['bs']), dtype=np.long)
 
         self.step_counter = 0
-        self.active_agent = np.zeros((self.opts['bs'], self.opts['nsteps']))
+        self.active_agent = np.zeros((self.opts['bs'], self.opts['nsteps']), dtype=np.long)
         for b in range(self.opts['bs']):
             for step in range(self.opts['nsteps']):
                 id = 1 + np.random.randint(0, self.opts['game_nagents'])
