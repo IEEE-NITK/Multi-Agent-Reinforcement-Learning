@@ -38,7 +38,7 @@ class SwitchRiddle():
                 else:
                     self.rewards[b] = self.reward_all_die
 
-            elif self.step_counter == self.opts['nsteps'] and self.terminal[b] == 0:
+            elif self.step_counter == self.opts['nsteps'] - 1 and self.terminal[b] == 0:
                 self.terminal[b] = 1
             
         return np.copy(self.rewards), np.copy(self.terminal)
