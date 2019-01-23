@@ -68,10 +68,7 @@ class SwitchRiddle():
             comm_lim = np.zeros(self.opts['bs'], dtype=np.long)
             for b in range(self.opts['bs']):
                 if step > 0 and agent == self.active_agent[b][step]:
-                    comm_lim[agent] = (self.active_agent[b][step - 1], ())
-                else:
-                    comm_lim[agent] = 0
-
+                    comm_lim[b] = self.active_agent[b][step - 1]
             return comm_lim
 
     def reset(self):
