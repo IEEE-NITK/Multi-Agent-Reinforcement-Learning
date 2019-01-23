@@ -31,7 +31,7 @@ class SwitchRiddle():
         for b in range(self.opts['bs']):
             active_agent = self.active_agent[b][self.step_counter] - 1
             if a_t[b][active_agent] == 2 and self.terminal[b] == 0:
-                has_been = np.squeeze(np.sum(self.has_been[b, :self.step_counter + 1, :], axis=2), axis=2)
+                has_been = np.squeeze(np.sum(self.has_been[b, :self.step_counter + 1, :], axis=1))
                 has_been = np.sum(np.greater(has_been, np.zeros_like(has_been), dtype=np.int16))
                 if has_been == self.opts['game_nagents']:
                     self.rewards[b] = self.reward_all_live
