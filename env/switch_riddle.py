@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 
 class SwitchRiddle():
     def __init__(self, opts):
@@ -37,10 +37,9 @@ class SwitchRiddle():
                     self.rewards[b] = self.reward_all_live
                 else:
                     self.rewards[b] = self.reward_all_die
-
+                self.terminal[b] = 1
             elif self.step_counter == self.opts['nsteps'] - 1 and self.terminal[b] == 0:
                 self.terminal[b] = 1
-            
         return np.copy(self.rewards), np.copy(self.terminal)
 
     def get_state(self):
@@ -87,12 +86,17 @@ class SwitchRiddle():
     def god_strategy_reward(self, steps):
         reward = np.zeros(self.opts['bs'])
         for b in range(self.opts['bs']):
-            has_been = np.squeeze(np.sum(self.has_been[b, :self.step_counter + 1, :], axis=2), axis=2)
-            has_been = np.sum(np.greater(has_been, np.zeros_like(has_been), dtype=np.int16))
+            has_been = np.squeeze(np.sum(self.has_been[b, :self.step_counter + 1, :], axis=1))
+            has_been = np.sum(np.greater(has_been, np.zeros_like(has_been)))
             if has_been == self.opts['game_nagents']:
                 reward[b] = self.reward_all_live
 
         return reward
+
+    def get_stats(self, steps):
+        stats = DotDic({})
+        stats.god_reward = self.god_strategy_reward(steps)
+        return stats
 
     def render(self, b=0):
         print('has been:', self.has_been[b])
