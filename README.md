@@ -6,24 +6,25 @@ The aim of this project is to explore Reinforcement Learning approaches for Mult
 * Learning Cooperation
 * Agent Modelling
 
-We focus on learning communication and cooperation. 
-
-We plan to implement RIAL and DIAL with parameter sharing, proposed by [Foerster et al., 2016](https://arxiv.org/abs/1605.06676). The algorithms will be implemented on the Switch Riddle environment.
-
-We also plan on implementing the MADDPG algorithm, for mixed cooperative and competitive environments, proposed by [Lowe et al., 2017](https://arxiv.org/abs/1706.02275)
+We focus on the problem of learning communication and cooperation in multi agent systems. 
 
 We also have a [blog](https://marl-ieee-nitk.github.io) with articles on the several concepts involved in the project.  
 
+## Implementations
+### Differentiable Inter Agent Learning
+Run and experiment with the implementation in your browser:[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/MJ10/2c0d1972f3dd1edcc3cd17c636aac8d2/dial.ipynb)
+
+[Foerster et al., 2016](https://arxiv.org/abs/1605.06676)
+
+This is one of the seminal works in applying Deep Reinforcement Learning for learning communication in cooperative multi-agent environments. The paper proposes two learning approaches, Reinforced Inter Agent Learning (RIAL) and Differentiable Inter Agent Learning (DIAL). We implement the DIAL approach on the Switch Riddle environment.
+
+The implementation in this repo is structured as follows:
+* [`env/switch_riddle.py`](https://github.com/IEEE-NITK/Multi-Agent-Reinforcement-Learning/blob/master/env/switch_riddle.py): Contains the implementation of the Switch Riddle environment.
+* [`agent.py`](https://github.com/IEEE-NITK/Multi-Agent-Reinforcement-Learning/blob/master/agent.py): Contains the implementation of the CNet model, Discretize/Regularise Unit and the Agent itself.
+* [`arena`](https://github.com/IEEE-NITK/Multi-Agent-Reinforcement-Learning/blob/master/arena.py): Contains the code for training the algorithm on the environment. 
+
 ## Requirements
 * [PyTorch](https://pytorch.org/)
-
-## Environments
-* [Switch Riddle](http://www.cut-the-knot.org/Probability/LightBulbs.shtml)
-
-## Structure
-* The `env` directory contains the code for the environments implemented.  
-* The `agent.py` file contains the PyTorch implementation of the agent.
-* The `arena.py` file contains the training loop and implementation of the learning algorithm.
 
 ## Team
 * Moksh Jain

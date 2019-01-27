@@ -5,6 +5,7 @@ import torch.nn as nn
 from env.switch_riddle import SwitchGame
 from agent import CNet, DRU, Agent
 
+
 class Arena:
   def __init__(self, opt, game):
     self.opt = opt
@@ -199,15 +200,34 @@ class Arena:
 
 
 def main():
+  opts = {
+      "game_nagents": 3,
+      "game_action_space": 2,
+      "game_action_space_total": 3,
+      "game_comm_limited": True,
+      "game_comm_bits": 1,
+      "game_comm_sigma": 2,
+      "nsteps": 6,
+      "gamma": 1,
+      "rnn_size": 128,
+      "bs": 32,
+      "lr": 0.0005,
+      "momentum": 0.05,
+      "eps": 0.05,
+      "nepisodes": 5001,
+      "step_test": 10,
+      "step_target": 100,
+      "eps_decay": 1.0
+  }
   game = SwitchGame(DotDic(opts))
   cnet = CNet(opts)
   cnet_target = copy.deepcopy(cnet)
   agents = [None]
   for i in range(1, opts['game_nagents'] + 1):
-    agents.append(Agent(DotDic(opts), game=game, model=cnet, target=cnet_target, agent_no=i))
-
-arena = Arena(DotDic(opts), game)
-arena.train(agents)
+    agents.append(Agent(DotDic(opts), game=game, model=cnet,
+                        target=cnet_target, agent_no=i))
+  arena = Arena(DotDic(opts), game)
+  arena.train(agents)
 
 
 if __name__ == '__main__':
